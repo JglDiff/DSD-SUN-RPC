@@ -26,3 +26,20 @@ suma_1(double arg1, char arg2, double arg3,  CLIENT *clnt)
 	}
 	return (&clnt_res);
 }
+
+calc_res *
+trig_1(char arg1, double arg2,  CLIENT *clnt)
+{
+	trig_1_argument arg;
+	static calc_res clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	arg.arg1 = arg1;
+	arg.arg2 = arg2;
+	if (clnt_call (clnt, TRIG, (xdrproc_t) xdr_trig_1_argument, (caddr_t) &arg,
+		(xdrproc_t) xdr_calc_res, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}

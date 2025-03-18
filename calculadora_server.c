@@ -4,40 +4,94 @@
  * as a guideline for developing your own functions.
  */
 
-#include "calculadora.h"
-#include <errno.h>
+ #include "calculadora.h"
+ #include <math.h>
+ #include <errno.h>
+ 
+ calc_res *
+ suma_1_svc(double arg1, char arg2, double arg3,  struct svc_req *rqstp)
+ {
+	 static calc_res result;
 
-calc_res *
-suma_1_svc(double arg1, char arg2, double arg3,  struct svc_req *rqstp)
-{
+	 if (arg2!='+' && arg2!='-' && arg2!='x' && arg2!='/' && arg2!='^')
+	 {
+		 result.errnum = 11;
+		 return (&result);
+	 }
+ 
+	 xdr_free(xdr_calc_res, &result);
+ 
+	 switch(arg2){
+		 case '+':
+			 result.calc_res_u.res = arg1 + arg3;
+			 break;
+		 case '-':
+			 result.calc_res_u.res = arg1 - arg3;
+			 break;
+		 case 'x':
+			 result.calc_res_u.res = arg1 * arg3;
+			 break;
+		 case '/':
+			 if(arg3==0){
+				 result.errnum = 2;
+				 return (&result);
+			 }
+			 result.calc_res_u.res = arg1 / arg3;
+			 break;
+		 case '^':
+			 result.calc_res_u.res = pow(arg1, arg3);
+			 break;
+	 }
+	 result.errnum = 0;
+	 return &result;
+ }
+ 
+ calc_res *
+ trig_1_svc(char arg1, double arg2,  struct svc_req *rqstp)
+ {
 	static calc_res result;
 
-	if (arg2!='+' && arg2!='-' && arg2!='x' && arg2!='/')
-	{
-		result.errnum = errno;
-		return (&result);
-	}
+	 
+	 if(arg1!='s' && arg1!='c' && arg1!='t' && arg1!='q' && arg1!='l' && arg1!='e')
+	 {
+		 result.errnum = 1;
+		 return (&result);
+	 }
 
-	xdr_free(xdr_calc_res, &result);
+	 xdr_free(xdr_calc_res, &result);
 
-	switch(arg2){
-		case '+':
-			result.calc_res_u.res = arg1 + arg3;
-			break;
-		case '-':
-			result.calc_res_u.res = arg1 - arg3;
-			break;
-		case 'x':
-			result.calc_res_u.res = arg1 * arg3;
-			break;
-		case '/':
-			if(arg3==0){
-				result.errnum = errno;
-				return (&result);
-			}
-			result.calc_res_u.res = arg1 / arg3;
-			break;
-	}
 
-	return &result;
-}
+	 switch (arg1)
+	 {
+		 case 's':
+			 result.calc_res_u.res = sin(arg2);
+			 break;
+		 case 'c':
+			 result.calc_res_u.res = cos(arg2);
+			 break;
+		 case 't':
+			 result.calc_res_u.res = tan(arg2);
+			 break;
+		 case 'q':
+			 if(arg2<0){
+				 result.errnum = errno;
+				 return (&result);
+			 }
+			 result.calc_res_u.res = sqrt(arg2);
+			 break;
+		 case 'l':
+			 if(arg2<=0){
+				 result.errnum = errno;
+				 return (&result);
+			 }
+			 result.calc_res_u.res = log(arg2);
+			 break;
+		 case 'e':
+			 result.calc_res_u.res = exp(arg2);
+			 break;
+	 }
+	 
+	 result.errnum = 0;
+	 return &result;
+ }
+ 

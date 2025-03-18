@@ -22,8 +22,14 @@ _suma_1 (suma_1_argument *argp, struct svc_req *rqstp)
 	return (suma_1_svc(argp->arg1, argp->arg2, argp->arg3, rqstp));
 }
 
+static calc_res *
+_trig_1 (trig_1_argument *argp, struct svc_req *rqstp)
+{
+	return (trig_1_svc(argp->arg1, argp->arg2, rqstp));
+}
+
 static void
-calcop_1(struct svc_req *rqstp, register SVCXPRT *transp)
+calcsimp_1(struct svc_req *rqstp, register SVCXPRT *transp)
 {
 	union {
 		suma_1_argument suma_1_arg;
@@ -63,20 +69,66 @@ calcop_1(struct svc_req *rqstp, register SVCXPRT *transp)
 	return;
 }
 
+static void
+calctrig_1(struct svc_req *rqstp, register SVCXPRT *transp)
+{
+	union {
+		trig_1_argument trig_1_arg;
+	} argument;
+	char *result;
+	xdrproc_t _xdr_argument, _xdr_result;
+	char *(*local)(char *, struct svc_req *);
+
+	switch (rqstp->rq_proc) {
+	case NULLPROC:
+		(void) svc_sendreply (transp, (xdrproc_t) xdr_void, (char *)NULL);
+		return;
+
+	case TRIG:
+		_xdr_argument = (xdrproc_t) xdr_trig_1_argument;
+		_xdr_result = (xdrproc_t) xdr_calc_res;
+		local = (char *(*)(char *, struct svc_req *)) _trig_1;
+		break;
+
+	default:
+		svcerr_noproc (transp);
+		return;
+	}
+	memset ((char *)&argument, 0, sizeof (argument));
+	if (!svc_getargs (transp, (xdrproc_t) _xdr_argument, (caddr_t) &argument)) {
+		svcerr_decode (transp);
+		return;
+	}
+	result = (*local)((char *)&argument, rqstp);
+	if (result != NULL && !svc_sendreply(transp, (xdrproc_t) _xdr_result, result)) {
+		svcerr_systemerr (transp);
+	}
+	if (!svc_freeargs (transp, (xdrproc_t) _xdr_argument, (caddr_t) &argument)) {
+		fprintf (stderr, "%s", "unable to free arguments");
+		exit (1);
+	}
+	return;
+}
+
 int
 main (int argc, char **argv)
 {
 	register SVCXPRT *transp;
 
-	pmap_unset (CALCOP, SIMPLE);
+	pmap_unset (CALCSIMP, SIMPLE);
+	pmap_unset (CALCTRIG, SIMPLE);
 
 	transp = svcudp_create(RPC_ANYSOCK);
 	if (transp == NULL) {
 		fprintf (stderr, "%s", "cannot create udp service.");
 		exit(1);
 	}
-	if (!svc_register(transp, CALCOP, SIMPLE, calcop_1, IPPROTO_UDP)) {
-		fprintf (stderr, "%s", "unable to register (CALCOP, SIMPLE, udp).");
+	if (!svc_register(transp, CALCSIMP, SIMPLE, calcsimp_1, IPPROTO_UDP)) {
+		fprintf (stderr, "%s", "unable to register (CALCSIMP, SIMPLE, udp).");
+		exit(1);
+	}
+	if (!svc_register(transp, CALCTRIG, SIMPLE, calctrig_1, IPPROTO_UDP)) {
+		fprintf (stderr, "%s", "unable to register (CALCTRIG, SIMPLE, udp).");
 		exit(1);
 	}
 
@@ -85,8 +137,12 @@ main (int argc, char **argv)
 		fprintf (stderr, "%s", "cannot create tcp service.");
 		exit(1);
 	}
-	if (!svc_register(transp, CALCOP, SIMPLE, calcop_1, IPPROTO_TCP)) {
-		fprintf (stderr, "%s", "unable to register (CALCOP, SIMPLE, tcp).");
+	if (!svc_register(transp, CALCSIMP, SIMPLE, calcsimp_1, IPPROTO_TCP)) {
+		fprintf (stderr, "%s", "unable to register (CALCSIMP, SIMPLE, tcp).");
+		exit(1);
+	}
+	if (!svc_register(transp, CALCTRIG, SIMPLE, calctrig_1, IPPROTO_TCP)) {
+		fprintf (stderr, "%s", "unable to register (CALCTRIG, SIMPLE, tcp).");
 		exit(1);
 	}
 

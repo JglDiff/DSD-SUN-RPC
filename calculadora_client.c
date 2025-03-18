@@ -4,64 +4,146 @@
  * as a guideline for developing your own functions.
  */
 
-#include "calculadora.h"
+ #include "calculadora.h"
 
 
-void
-calcop_1(char *host, double arg1, char arg2, double arg3)
-{
-	CLIENT *clnt;
-	calc_res  *result_1;
-
-#ifndef	DEBUG
-	clnt = clnt_create (host, CALCOP, SIMPLE, "udp");
-	if (clnt == NULL) {
-		clnt_pcreateerror (host);
-		exit (1);
-	}
-#endif	/* DEBUG */
-
-	result_1 = suma_1(arg1, arg2, arg3, clnt);
-	if (result_1 == (calc_res *) NULL) {
-		clnt_perror (clnt, "call failed");
-		exit(1);
-	}
-
-	if (result_1->errnum != 0)
-	{
-		printf("Error: %s\n", strerror(result_1->errnum));
-		exit(1);
-	}
-	else
-	{
-		printf("Resultado: %f\n", result_1->calc_res_u.res);
-	}
-
-	xdr_free(xdr_calc_res, result_1);
-#ifndef	DEBUG
-	clnt_destroy (clnt);
-#endif	 /* DEBUG */
-
-	exit(0);
-}
-
-
-int
-main (int argc, char *argv[])
-{
-	char *host;
-	double num1;
-	char oper;
-	double num2;
-
-	if (argc < 5) {
-		printf ("usage: %s server_host\n", argv[0]);
-		exit (1);
-	}
-	host = argv[1];
-	num1 = atof(argv[2]);
-	oper = *argv[3];
-	num2 = atof(argv[4]);
-
-	calcop_1 (host, num1, oper, num2);
-}
+ void
+ calcsimp_1(char *host, double arg1, char arg2, double arg3)
+ {
+	 CLIENT *clnt;
+	 calc_res  *result_1;
+ 
+ #ifndef	DEBUG
+	 clnt = clnt_create (host, CALCSIMP, SIMPLE, "udp");
+	 if (clnt == NULL) {
+		 clnt_pcreateerror (host);
+		 clnt_destroy (clnt);
+		 exit (1);
+	 }
+ #endif	/* DEBUG */
+	 xdr_free(xdr_calc_res, result_1);
+	 result_1 = suma_1(arg1, arg2, arg3, clnt);
+	 if (result_1 == (calc_res *) NULL) {
+		 clnt_perror (clnt, "call failed");
+		 clnt_destroy (clnt);
+		 exit(1);
+	 }
+ 
+	 if (result_1->errnum != 0)
+	 {
+		 printf("Error: %s\n", strerror(result_1->errnum));
+		 clnt_destroy (clnt);
+		 exit(1);
+	 }
+	 else
+	 {
+		 printf("Resultado: %f\n", result_1->calc_res_u.res);
+	 }
+ 
+	 xdr_free(xdr_calc_res, result_1);
+ #ifndef	DEBUG
+	 clnt_destroy (clnt);
+ #endif	 /* DEBUG */
+ 
+	 exit(0);
+ }
+ 
+ 
+ void
+ calctrig_1(char *host, char arg1, double arg2)
+ {
+	 CLIENT *clnt;
+	 calc_res  *result_1;
+	 
+ 
+ #ifndef	DEBUG
+ clnt = clnt_create (host, CALCTRIG, SIMPLE, "udp");
+ if (clnt == NULL) {
+	 clnt_pcreateerror (host);
+	 clnt_destroy (clnt);
+	 exit (1);
+ }
+ #endif	/* DEBUG */
+ xdr_free(xdr_calc_res, result_1);
+ result_1 = trig_1(arg1, arg2, clnt);
+ if (result_1 == (calc_res *) NULL) {
+	 clnt_perror (clnt, "call failed");
+	 clnt_destroy (clnt);
+	 exit(1);
+ }
+ 
+ if (result_1->errnum != 0)
+ {
+	 printf("Error: %s\n", strerror(result_1->errnum));
+	 clnt_destroy (clnt);
+	 exit(1);
+ }
+ else
+ {
+	 printf("Resultado: %f\n", result_1->calc_res_u.res);
+ }
+ 
+ xdr_free(xdr_calc_res, result_1);
+ #ifndef	DEBUG
+	 clnt_destroy (clnt);
+ #endif	 /* DEBUG */
+ }
+ 
+ 
+ int
+ main (int argc, char *argv[])
+ {
+	 char *host;
+	 double num1;
+	 char oper;
+	 double num2;
+	 int mode;
+ 
+	 mode = atoi(argv[2]);
+	 if (mode == 1)
+	 {
+		 if (argc != 6) {
+			 printf ("usage: %s server_host\n", argv[0]);
+			 exit (1);
+		 }
+		 host = argv[1];
+		 num1 = atof(argv[3]);
+		 oper = *argv[4];
+		 num2 = atof(argv[5]);
+		 calcsimp_1 (host, num1, oper, num2);
+	 }
+	 else if (mode == 2)
+	 {
+		 if (argc != 5) {
+			 printf ("usage: %s server_host\n", argv[0]);
+			 exit (1);
+		 }
+		 host = argv[1];
+		 if (strcmp(argv[3], "sin") == 0)
+			 oper = 's';
+		 else if (strcmp(argv[3], "cos") == 0)
+			 oper = 'c';
+		 else if (strcmp(argv[3], "tan") == 0)
+			 oper = 't';
+		 else if (strcmp(argv[3], "sqrt") == 0)
+			 oper = 'q';
+		 else if (strcmp(argv[3], "log") == 0)
+			 oper = 'l';
+		 else if (strcmp(argv[3], "exp") == 0)
+			 oper = 'e';
+		 else{
+			 printf("Operacion no soportada\n");
+			 exit(1);
+		 }
+ 
+		 num1 = atof(argv[4]);
+		 calctrig_1 (host, oper, num1);
+	 }
+	 else
+	 {
+		 printf("Modo no soportado\n");
+		 exit(1);
+	 }
+	 exit (0);
+ }
+ 

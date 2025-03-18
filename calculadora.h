@@ -29,20 +29,42 @@ struct suma_1_argument {
 };
 typedef struct suma_1_argument suma_1_argument;
 
-#define CALCOP 0x20000001
+#define CALCSIMP 0x20000001
 #define SIMPLE 1
 
 #if defined(__STDC__) || defined(__cplusplus)
 #define SUMA 1
 extern  calc_res * suma_1(double , char , double , CLIENT *);
 extern  calc_res * suma_1_svc(double , char , double , struct svc_req *);
-extern int calcop_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
+extern int calcsimp_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
 #define SUMA 1
 extern  calc_res * suma_1();
 extern  calc_res * suma_1_svc();
-extern int calcop_1_freeresult ();
+extern int calcsimp_1_freeresult ();
+#endif /* K&R C */
+
+struct trig_1_argument {
+	char arg1;
+	double arg2;
+};
+typedef struct trig_1_argument trig_1_argument;
+
+#define CALCTRIG 0x20000002
+#define SIMPLE 1
+
+#if defined(__STDC__) || defined(__cplusplus)
+#define TRIG 1
+extern  calc_res * trig_1(char , double , CLIENT *);
+extern  calc_res * trig_1_svc(char , double , struct svc_req *);
+extern int calctrig_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
+
+#else /* K&R C */
+#define TRIG 1
+extern  calc_res * trig_1();
+extern  calc_res * trig_1_svc();
+extern int calctrig_1_freeresult ();
 #endif /* K&R C */
 
 /* the xdr functions */
@@ -50,10 +72,12 @@ extern int calcop_1_freeresult ();
 #if defined(__STDC__) || defined(__cplusplus)
 extern  bool_t xdr_calc_res (XDR *, calc_res*);
 extern  bool_t xdr_suma_1_argument (XDR *, suma_1_argument*);
+extern  bool_t xdr_trig_1_argument (XDR *, trig_1_argument*);
 
 #else /* K&R C */
 extern bool_t xdr_calc_res ();
 extern bool_t xdr_suma_1_argument ();
+extern bool_t xdr_trig_1_argument ();
 
 #endif /* K&R C */
 

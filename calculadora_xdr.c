@@ -34,3 +34,13 @@ xdr_suma_1_argument (XDR *xdrs, suma_1_argument *objp)
 		 return FALSE;
 	return TRUE;
 }
+
+bool_t
+xdr_trig_1_argument (XDR *xdrs, trig_1_argument *objp)
+{
+	 if (!xdr_char (xdrs, &objp->arg1))
+		 return FALSE;
+	 if (!xdr_double (xdrs, &objp->arg2))
+		 return FALSE;
+	return TRUE;
+}
