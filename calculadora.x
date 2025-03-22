@@ -5,16 +5,18 @@ union calc_res switch (int errnum) {
       void;          /* con error: nada                   */
   };
 
-program CALCSIMP{
-    version SIMPLE{
-        calc_res SUMA(double,char,double) = 1;
+program CALCBIN{
+    version PRIMERA{
+        calc_res BIN(double,char,double) = 1;
     } = 1;
 } = 0x20000001;
 
-program CALCTRIG{
-    version SIMPLE{
-        calc_res TRIG(char, double) = 1;
+program CALCUN{
+    version PRIMERA{
+        calc_res UN(char, double) = 1;
     } = 1;
 } = 0x20000002;
+
+
 
 

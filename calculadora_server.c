@@ -9,15 +9,11 @@
  #include <errno.h>
  
  calc_res *
- suma_1_svc(double arg1, char arg2, double arg3,  struct svc_req *rqstp)
+ bin_1_svc(double arg1, char arg2, double arg3,  struct svc_req *rqstp)
  {
 	 static calc_res result;
 
-	 if (arg2!='+' && arg2!='-' && arg2!='x' && arg2!='/' && arg2!='^')
-	 {
-		 result.errnum = 11;
-		 return (&result);
-	 }
+	 
  
 	 xdr_free(xdr_calc_res, &result);
  
@@ -47,16 +43,9 @@
  }
  
  calc_res *
- trig_1_svc(char arg1, double arg2,  struct svc_req *rqstp)
+ un_1_svc(char arg1, double arg2,  struct svc_req *rqstp)
  {
 	static calc_res result;
-
-	 
-	 if(arg1!='s' && arg1!='c' && arg1!='t' && arg1!='q' && arg1!='l' && arg1!='e')
-	 {
-		 result.errnum = 1;
-		 return (&result);
-	 }
 
 	 xdr_free(xdr_calc_res, &result);
 
@@ -89,6 +78,10 @@
 		 case 'e':
 			 result.calc_res_u.res = exp(arg2);
 			 break;
+
+		 default:
+		 	result.errnum = EINVAL;
+		 	return (&result);
 	 }
 	 
 	 result.errnum = 0;

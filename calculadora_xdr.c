@@ -24,7 +24,7 @@ xdr_calc_res (XDR *xdrs, calc_res *objp)
 }
 
 bool_t
-xdr_suma_1_argument (XDR *xdrs, suma_1_argument *objp)
+xdr_bin_1_argument (XDR *xdrs, bin_1_argument *objp)
 {
 	 if (!xdr_double (xdrs, &objp->arg1))
 		 return FALSE;
@@ -36,7 +36,7 @@ xdr_suma_1_argument (XDR *xdrs, suma_1_argument *objp)
 }
 
 bool_t
-xdr_trig_1_argument (XDR *xdrs, trig_1_argument *objp)
+xdr_un_1_argument (XDR *xdrs, un_1_argument *objp)
 {
 	 if (!xdr_char (xdrs, &objp->arg1))
 		 return FALSE;

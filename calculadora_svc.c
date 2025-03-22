@@ -17,22 +17,22 @@
 #endif
 
 static calc_res *
-_suma_1 (suma_1_argument *argp, struct svc_req *rqstp)
+_bin_1 (bin_1_argument *argp, struct svc_req *rqstp)
 {
-	return (suma_1_svc(argp->arg1, argp->arg2, argp->arg3, rqstp));
+	return (bin_1_svc(argp->arg1, argp->arg2, argp->arg3, rqstp));
 }
 
 static calc_res *
-_trig_1 (trig_1_argument *argp, struct svc_req *rqstp)
+_un_1 (un_1_argument *argp, struct svc_req *rqstp)
 {
-	return (trig_1_svc(argp->arg1, argp->arg2, rqstp));
+	return (un_1_svc(argp->arg1, argp->arg2, rqstp));
 }
 
 static void
-calcsimp_1(struct svc_req *rqstp, register SVCXPRT *transp)
+calcbin_1(struct svc_req *rqstp, register SVCXPRT *transp)
 {
 	union {
-		suma_1_argument suma_1_arg;
+		bin_1_argument bin_1_arg;
 	} argument;
 	char *result;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -43,10 +43,10 @@ calcsimp_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		(void) svc_sendreply (transp, (xdrproc_t) xdr_void, (char *)NULL);
 		return;
 
-	case SUMA:
-		_xdr_argument = (xdrproc_t) xdr_suma_1_argument;
+	case BIN:
+		_xdr_argument = (xdrproc_t) xdr_bin_1_argument;
 		_xdr_result = (xdrproc_t) xdr_calc_res;
-		local = (char *(*)(char *, struct svc_req *)) _suma_1;
+		local = (char *(*)(char *, struct svc_req *)) _bin_1;
 		break;
 
 	default:
@@ -70,10 +70,10 @@ calcsimp_1(struct svc_req *rqstp, register SVCXPRT *transp)
 }
 
 static void
-calctrig_1(struct svc_req *rqstp, register SVCXPRT *transp)
+calcun_1(struct svc_req *rqstp, register SVCXPRT *transp)
 {
 	union {
-		trig_1_argument trig_1_arg;
+		un_1_argument un_1_arg;
 	} argument;
 	char *result;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -84,10 +84,10 @@ calctrig_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		(void) svc_sendreply (transp, (xdrproc_t) xdr_void, (char *)NULL);
 		return;
 
-	case TRIG:
-		_xdr_argument = (xdrproc_t) xdr_trig_1_argument;
+	case UN:
+		_xdr_argument = (xdrproc_t) xdr_un_1_argument;
 		_xdr_result = (xdrproc_t) xdr_calc_res;
-		local = (char *(*)(char *, struct svc_req *)) _trig_1;
+		local = (char *(*)(char *, struct svc_req *)) _un_1;
 		break;
 
 	default:
@@ -115,20 +115,20 @@ main (int argc, char **argv)
 {
 	register SVCXPRT *transp;
 
-	pmap_unset (CALCSIMP, SIMPLE);
-	pmap_unset (CALCTRIG, SIMPLE);
+	pmap_unset (CALCBIN, PRIMERA);
+	pmap_unset (CALCUN, PRIMERA);
 
 	transp = svcudp_create(RPC_ANYSOCK);
 	if (transp == NULL) {
 		fprintf (stderr, "%s", "cannot create udp service.");
 		exit(1);
 	}
-	if (!svc_register(transp, CALCSIMP, SIMPLE, calcsimp_1, IPPROTO_UDP)) {
-		fprintf (stderr, "%s", "unable to register (CALCSIMP, SIMPLE, udp).");
+	if (!svc_register(transp, CALCBIN, PRIMERA, calcbin_1, IPPROTO_UDP)) {
+		fprintf (stderr, "%s", "unable to register (CALCBIN, PRIMERA, udp).");
 		exit(1);
 	}
-	if (!svc_register(transp, CALCTRIG, SIMPLE, calctrig_1, IPPROTO_UDP)) {
-		fprintf (stderr, "%s", "unable to register (CALCTRIG, SIMPLE, udp).");
+	if (!svc_register(transp, CALCUN, PRIMERA, calcun_1, IPPROTO_UDP)) {
+		fprintf (stderr, "%s", "unable to register (CALCUN, PRIMERA, udp).");
 		exit(1);
 	}
 
@@ -137,12 +137,12 @@ main (int argc, char **argv)
 		fprintf (stderr, "%s", "cannot create tcp service.");
 		exit(1);
 	}
-	if (!svc_register(transp, CALCSIMP, SIMPLE, calcsimp_1, IPPROTO_TCP)) {
-		fprintf (stderr, "%s", "unable to register (CALCSIMP, SIMPLE, tcp).");
+	if (!svc_register(transp, CALCBIN, PRIMERA, calcbin_1, IPPROTO_TCP)) {
+		fprintf (stderr, "%s", "unable to register (CALCBIN, PRIMERA, tcp).");
 		exit(1);
 	}
-	if (!svc_register(transp, CALCTRIG, SIMPLE, calctrig_1, IPPROTO_TCP)) {
-		fprintf (stderr, "%s", "unable to register (CALCTRIG, SIMPLE, tcp).");
+	if (!svc_register(transp, CALCUN, PRIMERA, calcun_1, IPPROTO_TCP)) {
+		fprintf (stderr, "%s", "unable to register (CALCUN, PRIMERA, tcp).");
 		exit(1);
 	}
 

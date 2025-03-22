@@ -22,62 +22,62 @@ struct calc_res {
 };
 typedef struct calc_res calc_res;
 
-struct suma_1_argument {
+struct bin_1_argument {
 	double arg1;
 	char arg2;
 	double arg3;
 };
-typedef struct suma_1_argument suma_1_argument;
+typedef struct bin_1_argument bin_1_argument;
 
-#define CALCSIMP 0x20000001
-#define SIMPLE 1
+#define CALCBIN 0x20000001
+#define PRIMERA 1
 
 #if defined(__STDC__) || defined(__cplusplus)
-#define SUMA 1
-extern  calc_res * suma_1(double , char , double , CLIENT *);
-extern  calc_res * suma_1_svc(double , char , double , struct svc_req *);
-extern int calcsimp_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
+#define BIN 1
+extern  calc_res * bin_1(double , char , double , CLIENT *);
+extern  calc_res * bin_1_svc(double , char , double , struct svc_req *);
+extern int calcbin_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
-#define SUMA 1
-extern  calc_res * suma_1();
-extern  calc_res * suma_1_svc();
-extern int calcsimp_1_freeresult ();
+#define BIN 1
+extern  calc_res * bin_1();
+extern  calc_res * bin_1_svc();
+extern int calcbin_1_freeresult ();
 #endif /* K&R C */
 
-struct trig_1_argument {
+struct un_1_argument {
 	char arg1;
 	double arg2;
 };
-typedef struct trig_1_argument trig_1_argument;
+typedef struct un_1_argument un_1_argument;
 
-#define CALCTRIG 0x20000002
-#define SIMPLE 1
+#define CALCUN 0x20000002
+#define PRIMERA 1
 
 #if defined(__STDC__) || defined(__cplusplus)
-#define TRIG 1
-extern  calc_res * trig_1(char , double , CLIENT *);
-extern  calc_res * trig_1_svc(char , double , struct svc_req *);
-extern int calctrig_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
+#define UN 1
+extern  calc_res * un_1(char , double , CLIENT *);
+extern  calc_res * un_1_svc(char , double , struct svc_req *);
+extern int calcun_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
-#define TRIG 1
-extern  calc_res * trig_1();
-extern  calc_res * trig_1_svc();
-extern int calctrig_1_freeresult ();
+#define UN 1
+extern  calc_res * un_1();
+extern  calc_res * un_1_svc();
+extern int calcun_1_freeresult ();
 #endif /* K&R C */
 
 /* the xdr functions */
 
 #if defined(__STDC__) || defined(__cplusplus)
 extern  bool_t xdr_calc_res (XDR *, calc_res*);
-extern  bool_t xdr_suma_1_argument (XDR *, suma_1_argument*);
-extern  bool_t xdr_trig_1_argument (XDR *, trig_1_argument*);
+extern  bool_t xdr_bin_1_argument (XDR *, bin_1_argument*);
+extern  bool_t xdr_un_1_argument (XDR *, un_1_argument*);
 
 #else /* K&R C */
 extern bool_t xdr_calc_res ();
-extern bool_t xdr_suma_1_argument ();
-extern bool_t xdr_trig_1_argument ();
+extern bool_t xdr_bin_1_argument ();
+extern bool_t xdr_un_1_argument ();
 
 #endif /* K&R C */
 
